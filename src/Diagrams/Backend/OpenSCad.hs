@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE TypeOperators         #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
 
 module Diagrams.Backend.OpenSCad where
@@ -16,6 +17,8 @@ import           Diagrams.Prelude          as D
 import           Diagrams.ThreeD
 
 import           Control.Lens
+import           Data.Monoid
+import           Data.Semigroup
 import           Data.Tree
 import           Data.Typeable
 
@@ -31,9 +34,11 @@ data OpenSCad = OpenSCad
 type instance V OpenSCad = V3
 type instance N OpenSCad = Double
 
+instance Semigroup (Render OpenSCad V3 Double) where
+    (Osc i1) <> (Osc i2) = Osc (i1 <> i2)
+
 instance Monoid (Render OpenSCad V3 Double) where
     mempty = Osc mempty
-    (Osc i1) `mappend` (Osc i2) = Osc (i1 <> i2)
 
 instance Backend OpenSCad V3 Double where
     data Render OpenSCad V3 Double = Osc Model3d
